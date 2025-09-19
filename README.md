@@ -6,6 +6,14 @@ Note: Malware list needs to be supplied by the user. Repo includes a default lis
 
 UNDER DEVELOPMENT - USE AT YOUR OWN RISK
 
+## Screenshots
+
+### Catalog Mode
+![Catalog Mode](screenshots/catalog.png)
+
+### Scan Mode
+![Scan Mode](screenshots/scan.png)
+
 ## Features
 
 - Catalog all `package.json` files on the filesystem
