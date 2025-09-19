@@ -119,8 +119,8 @@ python crawler.py scan --packages-json local_packages.txt --malware-packages mal
 
 ### System-wide scan with verbose output
 ```bash
-python crawler.py catalog --output system_packages.txt
-python crawler.py scan --packages-json system_packages.txt --malware-packages malwares.txt --verbose --output scan_results.json
+sudo python crawler.py catalog --output system_packages.txt
+sudo python crawler.py scan --packages-json system_packages.txt --malware-packages malwares.txt --verbose --output scan_results.json
 ```
 
 ### Testing
