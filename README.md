@@ -44,8 +44,8 @@ python3 crawler.py scan [options]
 ```
 
 Required arguments:
-- `--packages-json FILE`: File containing package.json paths to scan
-- `--malware-packages FILE`: File listing malicious packages
+- `--catalog FILE`: File containing package.json paths to scan
+- `--malwares FILE`: File listing malicious packages
 
 Optional arguments:
 - `--output FILE`: File to save scan findings (JSON format, defaults to stdout)
@@ -53,7 +53,7 @@ Optional arguments:
 
 Example:
 ```bash
-python3 crawler.py scan --packages-json packages.txt --malware-packages malwares.txt --output results.json
+python3 crawler.py scan --catalog packages.txt --malwares malwares.txt --output results.json
 ```
 
 ## Malware Database Format
@@ -104,7 +104,7 @@ JSON output contains detailed information:
 
 2. **Scan**: Check for malicious packages
    ```bash
-   python3 crawler.py scan --packages-json packages.txt --malware-packages malwares.txt
+   python3 crawler.py scan --catalog packages.txt --malwares malwares.txt
    ```
 
 3. **Review**: Check the output for detected malware and take appropriate action
@@ -114,13 +114,13 @@ JSON output contains detailed information:
 ### Basic scan of current directory
 ```bash
 python3 crawler.py catalog --path . --output local_packages.txt
-python3 crawler.py scan --packages-json local_packages.txt --malware-packages malwares.txt
+python3 crawler.py scan --catalog local_packages.txt --malwares malwares.txt
 ```
 
 ### System-wide scan with verbose output
 ```bash
 sudo python3 crawler.py catalog --output system_packages.txt
-sudo python3 crawler.py scan --packages-json system_packages.txt --malware-packages malwares.txt --verbose --output scan_results.json
+sudo python3 crawler.py scan --catalog system_packages.txt --malwares malwares.txt --verbose --output scan_results.json
 ```
 
 ### Testing

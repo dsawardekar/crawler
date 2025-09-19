@@ -166,12 +166,12 @@ def run_catalog_mode(args):
     sys.exit(0)
 
 def run_scan_mode(args):
-    malware_db = parse_malware_file(args.malware_packages)
+    malware_db = parse_malware_file(args.malwares)
     if not malware_db:
         print("Malware database is empty or could not be read. Exiting.", file=sys.stderr)
         sys.exit(1)
 
-    project_paths = _read_projects_file(args.packages_json)
+    project_paths = _read_projects_file(args.catalog)
     if not project_paths:
         print("No projects to scan. The input file is empty.", file=sys.stderr)
         sys.exit(1)
@@ -208,8 +208,8 @@ def main():
     parser_catalog.add_argument("--path", default="/", help="Starting path for the filesystem scan.")
 
     parser_scan = subparsers.add_parser("scan", help="Scan packages for known malware packages.")
-    parser_scan.add_argument("--packages-json", required=True, help="File with package.json paths to scan.")
-    parser_scan.add_argument("--malware-packages", required=True, help="File listing malicious packages (pkg@version or just pkg).")
+    parser_scan.add_argument("--catalog", required=True, help="File with package.json paths to scan.")
+    parser_scan.add_argument("--malwares", required=True, help="File listing malicious packages (pkg@version or just pkg).")
     parser_scan.add_argument("--output", help="File to save scan findings (JSON format). Defaults to standard output.")
     parser_scan.add_argument("--verbose", action="store_true", help="Enable verbose, path-by-path progress reporting.")
 
