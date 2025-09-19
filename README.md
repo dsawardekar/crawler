@@ -23,6 +23,8 @@ No additional dependencies required beyond Python 3.10+ standard library.
 Find all `package.json` files on the system:
 
 ```bash
+./crawler.py catalog [options]
+# or
 python3 crawler.py catalog [options]
 ```
 
@@ -32,6 +34,8 @@ Options:
 
 Example:
 ```bash
+./crawler.py catalog --output my_packages.txt --path /home/user/projects
+# or
 python3 crawler.py catalog --output my_packages.txt --path /home/user/projects
 ```
 
@@ -40,6 +44,8 @@ python3 crawler.py catalog --output my_packages.txt --path /home/user/projects
 Scan projects for malicious packages:
 
 ```bash
+./crawler.py scan [options]
+# or
 python3 crawler.py scan [options]
 ```
 
@@ -49,10 +55,11 @@ Required arguments:
 
 Optional arguments:
 - `--output FILE`: File to save scan findings (JSON format, defaults to stdout)
-- `--verbose`: Enable verbose progress reporting
 
 Example:
 ```bash
+./crawler.py scan --catalog packages.txt --malwares malwares.txt --output results.json
+# or
 python3 crawler.py scan --catalog packages.txt --malwares malwares.txt --output results.json
 ```
 
@@ -99,11 +106,15 @@ JSON output contains detailed information:
 
 1. **Catalog**: Find all package.json files
    ```bash
+   ./crawler.py catalog --output packages.txt
+   # or
    python3 crawler.py catalog --output packages.txt
    ```
 
 2. **Scan**: Check for malicious packages
    ```bash
+   ./crawler.py scan --catalog packages.txt --malwares malwares.txt
+   # or
    python3 crawler.py scan --catalog packages.txt --malwares malwares.txt
    ```
 
@@ -113,6 +124,9 @@ JSON output contains detailed information:
 
 ### Basic scan of current directory
 ```bash
+./crawler.py catalog --path . --output local_packages.txt
+./crawler.py scan --catalog local_packages.txt --malwares malwares.txt
+# or
 python3 crawler.py catalog --path . --output local_packages.txt
 python3 crawler.py scan --catalog local_packages.txt --malwares malwares.txt
 ```
@@ -122,6 +136,9 @@ python3 crawler.py scan --catalog local_packages.txt --malwares malwares.txt
 Note: Default catalog starts from /, recursively.
 
 ```bash
+sudo ./crawler.py catalog --output system_packages.txt
+sudo ./crawler.py scan --catalog system_packages.txt --malwares malwares.txt --output scan_results.json
+# or
 sudo python3 crawler.py catalog --output system_packages.txt
 sudo python3 crawler.py scan --catalog system_packages.txt --malwares malwares.txt --output scan_results.json
 ```
