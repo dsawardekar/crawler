@@ -14,7 +14,7 @@ UNDER DEVELOPMENT - USE AT YOUR OWN RISK
 
 ## Installation
 
-No additional dependencies required beyond Python 3.6+ standard library.
+No additional dependencies required beyond Python 3.10+ standard library.
 
 ## Usage
 
@@ -23,7 +23,7 @@ No additional dependencies required beyond Python 3.6+ standard library.
 Find all `package.json` files on the system:
 
 ```bash
-python crawler.py catalog [options]
+python3 crawler.py catalog [options]
 ```
 
 Options:
@@ -32,7 +32,7 @@ Options:
 
 Example:
 ```bash
-python crawler.py catalog --output my_packages.txt --path /home/user/projects
+python3 crawler.py catalog --output my_packages.txt --path /home/user/projects
 ```
 
 ### Scan Mode
@@ -40,7 +40,7 @@ python crawler.py catalog --output my_packages.txt --path /home/user/projects
 Scan projects for malicious packages:
 
 ```bash
-python crawler.py scan [options]
+python3 crawler.py scan [options]
 ```
 
 Required arguments:
@@ -53,7 +53,7 @@ Optional arguments:
 
 Example:
 ```bash
-python crawler.py scan --packages-json packages.txt --malware-packages malwares.txt --output results.json
+python3 crawler.py scan --packages-json packages.txt --malware-packages malwares.txt --output results.json
 ```
 
 ## Malware Database Format
@@ -99,12 +99,12 @@ JSON output contains detailed information:
 
 1. **Catalog**: Find all package.json files
    ```bash
-   python crawler.py catalog --output packages.txt
+   python3 crawler.py catalog --output packages.txt
    ```
 
 2. **Scan**: Check for malicious packages
    ```bash
-   python crawler.py scan --packages-json packages.txt --malware-packages malwares.txt
+   python3 crawler.py scan --packages-json packages.txt --malware-packages malwares.txt
    ```
 
 3. **Review**: Check the output for detected malware and take appropriate action
@@ -113,14 +113,14 @@ JSON output contains detailed information:
 
 ### Basic scan of current directory
 ```bash
-python crawler.py catalog --path . --output local_packages.txt
-python crawler.py scan --packages-json local_packages.txt --malware-packages malwares.txt
+python3 crawler.py catalog --path . --output local_packages.txt
+python3 crawler.py scan --packages-json local_packages.txt --malware-packages malwares.txt
 ```
 
 ### System-wide scan with verbose output
 ```bash
-sudo python crawler.py catalog --output system_packages.txt
-sudo python crawler.py scan --packages-json system_packages.txt --malware-packages malwares.txt --verbose --output scan_results.json
+sudo python3 crawler.py catalog --output system_packages.txt
+sudo python3 crawler.py scan --packages-json system_packages.txt --malware-packages malwares.txt --verbose --output scan_results.json
 ```
 
 ### Testing
