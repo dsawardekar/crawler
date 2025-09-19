@@ -1,6 +1,8 @@
-# Node.js Malware Scanner
+# NPM Malware Scanner
 
 A Python tool for scanning Node.js projects to detect malicious packages in dependencies.
+
+Note: Malware list needs to be supplied by the user. Repo includes a default list of malware packages
 
 UNDER DEVELOPMENT - USE AT YOUR OWN RISK
 
