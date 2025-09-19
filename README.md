@@ -122,3 +122,15 @@ python crawler.py scan --packages-json local_packages.txt --malware-packages mal
 python crawler.py catalog --output system_packages.txt
 python crawler.py scan --packages-json system_packages.txt --malware-packages malwares.txt --verbose --output scan_results.json
 ```
+
+### Testing
+
+Unit tests can be run using:
+
+```bash
+pytest test_crawler.py
+```
+
+### License
+
+This project is licensed under the MIT License.
