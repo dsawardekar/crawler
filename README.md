@@ -117,10 +117,13 @@ python3 crawler.py catalog --path . --output local_packages.txt
 python3 crawler.py scan --catalog local_packages.txt --malwares malwares.txt
 ```
 
-### System-wide scan with verbose output
+### System-wide scan
+
+Note: Default catalog starts from /, recursively.
+
 ```bash
 sudo python3 crawler.py catalog --output system_packages.txt
-sudo python3 crawler.py scan --catalog system_packages.txt --malwares malwares.txt --verbose --output scan_results.json
+sudo python3 crawler.py scan --catalog system_packages.txt --malwares malwares.txt --output scan_results.json
 ```
 
 ### Testing
