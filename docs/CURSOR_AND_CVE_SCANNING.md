@@ -76,9 +76,7 @@ Paste or link the **GitHub Security Advisory** or **NVD/CVE** page. Ask for:
 - **Exact npm package name(s)** as published on npm (e.g. `next`, `react-server-dom-webpack`, `axios`).
 - **Affected version ranges** translated into this tool’s syntax: one or more entries in `vulnerable_ranges`, each entry a string of **AND** clauses, **OR** across array elements.
 
-Example prompt pattern:
-
-> Using the same structure as `examples/advisories_axios.example.json`, add an advisories file for [paste GHSA or CVE URL]. Use package keys exactly as on npm. Express affected versions as `vulnerable_ranges` with `>=` and `<` bounds matching the patched versions from the advisory.
+**Ready-to-use prompt:** copy the short block in **`docs/PULL_REQUEST.md`** (*Short prompt for an AI agent*). Replace `PASTE_ADVISORY_URL_HERE` with your GHSA or NVD/CVE link.
 
 ### 3. Merge multiple advisories
 
