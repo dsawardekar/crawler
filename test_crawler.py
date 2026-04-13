@@ -1,6 +1,16 @@
+import json
+
 import pytest
 from pathlib import Path
-from crawler import parse_malware_file, PackageScanner, PackageJSONScanner, PackageMatch
+from crawler import (
+    AdvisoryMatch,
+    PackageJSONScanner,
+    PackageMatch,
+    PackageScanner,
+    _is_package_json_under_node_modules,
+    load_advisories_json,
+    parse_malware_file,
+)
 
 @pytest.fixture
 def scanner():
@@ -195,3 +205,146 @@ def test_scan_should_find_multiple_malicious_packages(mock_project_with_node_mod
     scanner = PackageScanner(malware_db)
     findings = list(scanner.scan(mock_project_with_node_modules))
     assert len(findings) == 2
+
+
+def test_should_load_advisories_json_with_semver_ranges(tmp_path):
+    adv = tmp_path / "adv.json"
+    adv.write_text(
+        json.dumps(
+            {
+                "packages": {
+                    "axios": [
+                        {
+                            "id": "CVE-TEST",
+                            "title": "Test",
+                            "references": ["https://example.invalid/cve"],
+                            "vulnerable_ranges": [">=0.0.0,<1.13.5"],
+                        }
+                    ]
+                }
+            }
+        )
+    )
+    loaded = load_advisories_json(str(adv))
+    assert "axios" in loaded
+    assert loaded["axios"][0].advisory_id == "CVE-TEST"
+    assert len(loaded["axios"][0].specifier_sets) == 1
+
+
+def test_advisory_scan_should_flag_version_inside_range(tmp_path):
+    workspace_dir = tmp_path / "workspace"
+    node_modules_dir = workspace_dir / "node_modules"
+    axios_dir = node_modules_dir / "axios"
+    axios_dir.mkdir(parents=True)
+    (axios_dir / "package.json").write_text('{"name":"axios","version":"1.13.2"}')
+    project_dir = workspace_dir / "packages" / "my-app"
+    project_dir.mkdir(parents=True)
+    pkg_json = project_dir / "package.json"
+    pkg_json.touch()
+
+    adv = tmp_path / "adv.json"
+    adv.write_text(
+        json.dumps(
+            {
+                "packages": {
+                    "axios": [
+                        {"id": "CVE-TEST", "vulnerable_ranges": [">=0.0.0,<1.13.5"]}
+                    ]
+                }
+            }
+        )
+    )
+    advisories = load_advisories_json(str(adv))
+    scanner = PackageScanner({}, advisories)
+    findings = list(scanner.scan(pkg_json))
+    assert len(findings) == 1
+    assert isinstance(findings[0], AdvisoryMatch)
+    assert findings[0].package == "axios"
+    assert findings[0].found_version == "1.13.2"
+
+
+def test_advisory_scan_should_not_flag_patched_version(tmp_path):
+    workspace_dir = tmp_path / "workspace"
+    axios_dir = workspace_dir / "node_modules" / "axios"
+    axios_dir.mkdir(parents=True)
+    (axios_dir / "package.json").write_text('{"name":"axios","version":"1.13.5"}')
+    pkg_json = workspace_dir / "package.json"
+    pkg_json.touch()
+
+    adv = tmp_path / "adv.json"
+    adv.write_text(
+        json.dumps(
+            {
+                "packages": {
+                    "axios": [
+                        {"id": "CVE-TEST", "vulnerable_ranges": [">=0.0.0,<1.13.5"]}
+                    ]
+                }
+            }
+        )
+    )
+    advisories = load_advisories_json(str(adv))
+    scanner = PackageScanner({}, advisories)
+    assert list(scanner.scan(pkg_json)) == []
+
+
+def test_should_treat_path_under_node_modules_as_dependency_manifest():
+    assert _is_package_json_under_node_modules("/proj/node_modules/q/package.json")
+    assert _is_package_json_under_node_modules("/proj/node_modules/@scope/pkg/package.json")
+
+
+def test_should_not_treat_workspace_package_as_node_modules_manifest():
+    assert not _is_package_json_under_node_modules("/proj/package.json")
+    assert not _is_package_json_under_node_modules("/proj/packages/my-app/package.json")
+
+
+def test_hoisted_axios_reported_once_when_nested_package_json_paths_filtered(tmp_path):
+    workspace = tmp_path / "w"
+    nm = workspace / "node_modules"
+    (nm / "axios").mkdir(parents=True)
+    (nm / "axios" / "package.json").write_text('{"version":"1.13.2"}')
+    (nm / "q").mkdir(parents=True)
+    (nm / "q" / "package.json").write_text('{"name":"q","version":"1.0.0"}')
+    app = workspace / "package.json"
+    app.touch()
+    nested_q = nm / "q" / "package.json"
+
+    adv = tmp_path / "adv.json"
+    adv.write_text(
+        '{"packages":{"axios":[{"id":"X","vulnerable_ranges":[">=0.0.0,<2.0.0"]}]}}'
+    )
+    rules = load_advisories_json(str(adv))
+    scanner = PackageScanner({}, rules)
+
+    paths_both = [str(app), str(nested_q)]
+    count_both = sum(1 for p in paths_both for _ in scanner.scan(p))
+    assert count_both == 2
+
+    paths_filtered = [p for p in paths_both if not _is_package_json_under_node_modules(p)]
+    count_filtered = sum(1 for p in paths_filtered for _ in scanner.scan(p))
+    assert count_filtered == 1
+
+
+def test_space_separated_range_in_json_should_work(tmp_path):
+    workspace_dir = tmp_path / "workspace"
+    axios_dir = workspace_dir / "node_modules" / "axios"
+    axios_dir.mkdir(parents=True)
+    (axios_dir / "package.json").write_text('{"name":"axios","version":"1.0.0"}')
+    pkg_json = workspace_dir / "package.json"
+    pkg_json.touch()
+
+    adv = tmp_path / "adv.json"
+    adv.write_text(
+        json.dumps(
+            {
+                "packages": {
+                    "axios": [
+                        {"id": "CVE-TEST", "vulnerable_ranges": [">=0.0.0 <1.13.5"]}
+                    ]
+                }
+            }
+        )
+    )
+    advisories = load_advisories_json(str(adv))
+    scanner = PackageScanner({}, advisories)
+    assert len(list(scanner.scan(pkg_json))) == 1

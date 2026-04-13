@@ -1,0 +1,21 @@
+{
+  "$schema": "Example in examples/ for crawler.py --advisories (comma or space between clauses; e.g. >=1.0.0,<2.0.0).",
+  "_instructions": "When creating NEW advisory files (e.g. via Cursor/AI), name them: advisories_<library>_<id>.json — library = short npm-related name (lowercase, underscores); id = CVE-2026-12345 or GHSA-xxxx-xxxx-xxxx if no CVE yet. Examples: advisories_axios_CVE-2026-25639.json, advisories_nextjs_GHSA-q4gf-8mx6-v5v3.json. Bundled templates use the .example.json suffix; drop .example for your own copies.",
+  "packages": {
+    "axios": [
+      {
+        "id": "CVE-2026-25639",
+        "title": "Axios mergeConfig DoS via __proto__ (simplified summary)",
+        "references": [
+          "https://nvd.nist.gov/vuln/detail/CVE-2026-25639",
+          "https://github.com/axios/axios/security/advisories/GHSA-43fc-jf86-j433"
+        ],
+        "vulnerable_ranges": [
+          ">=0.0.0,<1.13.5",
+          ">=0.29.0,<0.30.3"
+        ],
+        "notes": "NVD text: fixed in 1.13.5 and 0.30.3. Adjust ranges if you track only the 1.x line."
+      }
+    ]
+  }
+}
