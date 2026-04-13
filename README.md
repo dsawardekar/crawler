@@ -17,14 +17,19 @@ UNDER DEVELOPMENT - USE AT YOUR OWN RISK
 ## Features
 
 - Catalog all `package.json` files on the filesystem
-- Scan projects for user supplied malicious packages list
-- Support for both specific versions and "all versions" malware detection
-- Basic reporting with package locations
-- Fast enough for system-wide scans
+- Scan with a **malware IOC list** (`--malwares`), **CVE-style semver ranges** (`--advisories` JSON), or **both**
+- Reference **`examples/`**: advisory JSON and IOC list templates (axios, React RSC, Next.js)
+- By default, **skips** catalog paths under `node_modules/` to avoid duplicate hits from hoisted deps (`--include-node-modules` to opt in)
+- JSON findings include **`finding_type`**: `malware` or `advisory`
+- **No pip dependencies** for runtime (Python 3.10+ stdlib only)
+
+## Documentation
+
+- **[CVE / Cursor workflow and changelog-style notes](docs/CURSOR_AND_CVE_SCANNING.md)** — how to use AI to author advisory JSON, merge files, and run large scans safely.
 
 ## Installation
 
-No additional dependencies required beyond Python 3.10+ standard library.
+No additional runtime dependencies beyond Python 3.10+ standard library. Optional: `pytest` for tests (see `requirements.txt`).
 
 ## Usage
 
@@ -59,18 +64,27 @@ Scan projects for malicious packages:
 python3 crawler.py scan [options]
 ```
 
-Required arguments:
-- `--catalog FILE`: File containing package.json paths to scan
-- `--malwares FILE`: File listing malicious packages
+Required:
 
-Optional arguments:
-- `--output FILE`: File to save scan findings (JSON format, defaults to stdout)
+- `--catalog FILE`: File containing `package.json` paths to scan (one path per line)
 
-Example:
+Provide **at least one** of:
+
+- `--malwares FILE`: Malicious packages list (exact `pkg@version` or `pkg` for any version)
+- `--advisories FILE`: JSON with semver vulnerable ranges (see `examples/*.example.json`)
+
+Optional:
+
+- `--output FILE`: Save findings as JSON (defaults to stdout)
+- `--verbose`: Per-path progress on stderr
+- `--include-node-modules`: Also scan `package.json` paths under `node_modules/`
+
+Examples:
+
 ```bash
-./crawler.py scan --catalog packages.txt --malwares malwares.txt --output results.json
-# or
 python3 crawler.py scan --catalog packages.txt --malwares malwares.txt --output results.json
+python3 crawler.py scan --catalog packages.txt --advisories examples/advisories_axios.example.json --output cve_results.json
+python3 crawler.py scan --catalog packages.txt --malwares malwares.txt --advisories examples/advisories_axios.example.json --output combined.json
 ```
 
 ## Malware Database Format
@@ -102,15 +116,19 @@ Package: malicious-package@1.2.3
 Location: /path/to/node_modules/malicious-package
 ```
 
-JSON output contains detailed information:
+JSON output is one object per finding (malware or advisory), including **`finding_type`**. Malware example:
+
 ```json
 {
+    "finding_type": "malware",
     "project_package_json": "/path/to/project/package.json",
     "node_modules_path": "/path/to/node_modules",
     "malicious_package": "malicious-package",
     "found_version": "1.2.3"
 }
 ```
+
+Advisory matches add fields such as **`package`**, **`advisory_id`**, and **`references`**.
 
 ## Workflow
 
@@ -121,14 +139,13 @@ JSON output contains detailed information:
    python3 crawler.py catalog --output packages.txt
    ```
 
-2. **Scan**: Check for malicious packages
+2. **Scan**: Check IOC list, advisories JSON, or both
    ```bash
-   ./crawler.py scan --catalog packages.txt --malwares malwares.txt
-   # or
    python3 crawler.py scan --catalog packages.txt --malwares malwares.txt
+   python3 crawler.py scan --catalog packages.txt --advisories examples/advisories_axios.example.json
    ```
 
-3. **Review**: Check the output for detected malware and take appropriate action
+3. **Review**: Inspect stderr summaries and the JSON output; upgrade or remove affected dependencies as needed
 
 ## Examples
 

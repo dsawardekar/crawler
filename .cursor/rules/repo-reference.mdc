@@ -1,0 +1,75 @@
+---
+description: NPM malware scanner repo — purpose, layout, CLI, and conventions for agents
+alwaysApply: true
+---
+
+# Repo: NPM malware scanner (Python)
+
+## Purpose
+
+Local tool to find **known malicious npm packages** (IOC list) and/or **semver advisory ranges** (JSON) on disk. It does **not** call the registry. Human-oriented workflow notes: **`docs/CURSOR_AND_CVE_SCANNING.md`**.
+
+## Stack
+
+- **Python 3.10+**, stdlib only at runtime (`requirements.txt` is optional dev notes).
+- **Tests**: `pytest` (`test_crawler.py`).
+
+## Entry point
+
+- **`crawler.py`**: CLI with two subcommands (`catalog`, `scan`).
+
+## Modes
+
+### `catalog`
+
+- Recursively walks `--path` (default `/`) with `os.walk`, writes every `package.json` full path to `--output` (default `packages.txt`), one path per line.
+- Progress spinner on stderr; may need elevated permissions for full-disk scan.
+
+### `scan`
+
+- `--catalog` (required). At least one of **`--malwares`** or **`--advisories`** (JSON; see `examples/*.example.json`).
+- Default: **skip** catalog paths under `node_modules/`; **`--include-node-modules`** to scan them.
+- Optional `--output`, `--verbose`. JSON findings include **`finding_type`** (`malware` | `advisory`).
+
+**Exit codes:** `0` clean, `1` bad input/config, `2` findings.
+
+## Core types and classes (`crawler.py`)
+
+- **`PackageMatch`**, **`AdvisoryMatch`**, **`AdvisoryRule`**; advisory semver matching is stdlib (no `packaging`).
+- **`parse_malware_file`**: builds `dict[str, list[str]]` — package name → list of bad versions; **empty list means “any version”**.
+- **`PackageScanner`**: `get_node_modules(package_json_path)` walks up ancestors for first `node_modules` dir; `_check_package` reads `node_modules/<pkg>/package.json` and compares `version` to the rule list.
+- **`PackageJSONScanner`**: filesystem catalog of `package.json` files.
+
+## Malware file format
+
+- One entry per line; `#` starts a comment; blank lines ignored.
+- **`pkgname@x.y.z`**: only that version matches.
+- **`pkgname`** or **`@scope/name`** with no `@version`: match **all** installed versions (stored as `[]` in the internal dict).
+- Scoped names use a **single** trailing `@` for the version split (`rsplit('@', 1)`), e.g. `@angular/core@14.0.0`.
+
+## Repo files (typical)
+
+| Path | Role |
+|------|------|
+| `crawler.py` | CLI and scanner implementation |
+| `test_crawler.py` | Pytest coverage for parser, resolver, scan, catalog |
+| `malwares.txt` | Default bundled list (large; user-maintained / supplied) |
+| `examples/` | Advisory JSON + IOC templates; **new** advisory files: `advisories_<library>_<CVE-or-GHSA>.json` (see `_instructions` in example JSON) |
+| `README.md` | User-facing usage and examples |
+| `LICENSE` | MIT |
+
+**Untracked / local artifacts** (examples): catalog outputs like `packages_apr1.txt`, scan outputs like `infected_axios.json`, alternate lists like `malwares_axios.txt` — treat as **generated or experimental**, not source of truth unless the user says otherwise.
+
+## Conventions for changes
+
+- Keep **stdlib-only** unless the user explicitly adds dependencies.
+- Match existing style: type hints, dataclasses, small focused functions, stderr for UX/progress.
+- Extend **`test_crawler.py`** when changing `parse_malware_file`, `get_node_modules`, or scan behavior.
+
+## Quick commands
+
+```bash
+python3 crawler.py catalog --output packages.txt --path "$HOME"
+python3 crawler.py scan --catalog packages.txt --advisories examples/advisories_axios.example.json --output findings.json
+pytest test_crawler.py
+```

@@ -1,0 +1,21 @@
+{
+  "$schema": "Example in examples/ for crawler.py --advisories (GHSA-q4gf-8mx6-v5v3 / CVE-2026-23869, Next.js App Router).",
+  "_instructions": "When creating NEW advisory files (e.g. via Cursor/AI), name them: advisories_<library>_<id>.json — library = short npm-related name (lowercase, underscores); id = CVE-2026-12345 or GHSA-xxxx-xxxx-xxxx if no CVE yet. Examples: advisories_axios_CVE-2026-25639.json, advisories_nextjs_GHSA-q4gf-8mx6-v5v3.json. Bundled templates use the .example.json suffix; drop .example for your own copies.",
+  "packages": {
+    "next": [
+      {
+        "id": "GHSA-q4gf-8mx6-v5v3",
+        "title": "Denial of Service with Server Components (Next.js App Router)",
+        "references": [
+          "https://github.com/vercel/next.js/security/advisories/GHSA-q4gf-8mx6-v5v3",
+          "https://www.cve.org/CVERecord?id=CVE-2026-23869"
+        ],
+        "vulnerable_ranges": [
+          ">=13.0.0,<15.5.15",
+          ">=16.0.0,<16.2.3"
+        ],
+        "notes": "Crafted HTTP to App Router Server Function endpoints can cause high CPU (DoS). Patched in next@15.5.15 and next@16.2.3. Related upstream React RSC issue CVE-2026-23869."
+      }
+    ]
+  }
+}

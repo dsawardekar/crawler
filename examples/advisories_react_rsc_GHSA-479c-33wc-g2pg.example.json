@@ -1,0 +1,54 @@
+{
+  "$schema": "Example in examples/ for crawler.py --advisories (GHSA-479c-33wc-g2pg / CVE-2026-23869).",
+  "_instructions": "When creating NEW advisory files (e.g. via Cursor/AI), name them: advisories_<library>_<id>.json — library = short npm-related name (lowercase, underscores); id = CVE-2026-12345 or GHSA-xxxx-xxxx-xxxx if no CVE yet. Examples: advisories_axios_CVE-2026-25639.json, advisories_nextjs_GHSA-q4gf-8mx6-v5v3.json. Bundled templates use the .example.json suffix; drop .example for your own copies.",
+  "packages": {
+    "react-server-dom-webpack": [
+      {
+        "id": "GHSA-479c-33wc-g2pg",
+        "title": "Denial of Service in React Server Components (react-server-dom-webpack)",
+        "references": [
+          "https://github.com/facebook/react/security/advisories/GHSA-479c-33wc-g2pg",
+          "https://www.cve.org/CVERecord?id=CVE-2026-23869"
+        ],
+        "vulnerable_ranges": [
+          ">=19.0.0,<19.0.5",
+          ">=19.1.0,<19.1.6",
+          ">=19.2.0,<19.2.5"
+        ],
+        "notes": "DoS via crafted HTTP requests to Server Function endpoints. Patched: 19.0.5, 19.1.6, 19.2.5. Only affects apps using RSC with a supported bundler integration."
+      }
+    ],
+    "react-server-dom-parcel": [
+      {
+        "id": "GHSA-479c-33wc-g2pg",
+        "title": "Denial of Service in React Server Components (react-server-dom-parcel)",
+        "references": [
+          "https://github.com/facebook/react/security/advisories/GHSA-479c-33wc-g2pg",
+          "https://www.cve.org/CVERecord?id=CVE-2026-23869"
+        ],
+        "vulnerable_ranges": [
+          ">=19.0.0,<19.0.5",
+          ">=19.1.0,<19.1.6",
+          ">=19.2.0,<19.2.5"
+        ],
+        "notes": "Same advisory as react-server-dom-webpack; use fixed line versions 19.0.5, 19.1.6, or 19.2.5+."
+      }
+    ],
+    "react-server-dom-turbopack": [
+      {
+        "id": "GHSA-479c-33wc-g2pg",
+        "title": "Denial of Service in React Server Components (react-server-dom-turbopack)",
+        "references": [
+          "https://github.com/facebook/react/security/advisories/GHSA-479c-33wc-g2pg",
+          "https://www.cve.org/CVERecord?id=CVE-2026-23869"
+        ],
+        "vulnerable_ranges": [
+          ">=19.0.0,<19.0.5",
+          ">=19.1.0,<19.1.6",
+          ">=19.2.0,<19.2.5"
+        ],
+        "notes": "Same advisory as react-server-dom-webpack; use fixed line versions 19.0.5, 19.1.6, or 19.2.5+."
+      }
+    ]
+  }
+}
